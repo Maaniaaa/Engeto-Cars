@@ -1,9 +1,11 @@
 package com.example;
 
 import java.time.LocalDate;
+import java.util.IllegalFormatException;
 
 public class Car {
 
+    private static final String FILE_ITEM_DELIMITER = "\t";
     private String brand;
     private String make;
     private int numOfSeats;
@@ -11,6 +13,20 @@ public class Car {
     private int power;
     private LocalDate nextCheckDate;
     private FuelType fuelType;
+
+    public static Car parseText(String record) {
+        String[] items = record.split(FILE_ITEM_DELIMITER);
+
+        if (items.length != 7) throw new CarsException("Špatný počet položek  na řádku: "+record);
+
+        String brand = items[0];
+        String make;
+        int numOfSeats;
+        String licenseNumber;
+        int power;
+        LocalDate nextCheckDate;
+        FuelType fuelType;
+    }
 
     public Car(String brand, String licenseNumber, LocalDate nextCheckDate) {
         this(brand, "", 5, licenseNumber, 0, nextCheckDate, FuelType.PETROL);
@@ -50,7 +66,8 @@ public class Car {
         return numOfSeats;
     }
 
-    public void setSeats(int seats) {
+    public void setSeats(int seats) throws CarsException {
+        if (seats <=0) throw new CarsException("Zadán počet sedadal menší než 0");
         this.numOfSeats = seats;
     }
 

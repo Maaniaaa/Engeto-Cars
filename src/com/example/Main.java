@@ -1,12 +1,29 @@
 package com.example;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Main {
 
+    private static final String INPUT_FILE = "cars.txt";
+
     public static void main(String[] args) {
-        ArrayList<Car> listOfCars = new ArrayList<>();
+       //načítání ze souboru cars.txt
+        try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(INPUT_FILE)))) {
+            while (scanner.hasNextLine()) {
+                System.out.println(scanner.nextLine());
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("Soubor " + INPUT_FILE + " nenalezen " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void main1(String[] args) {
+       /* ArrayList<Car> listOfCars = new ArrayList<>();
         ArrayList<Mission> listOfMissions = new ArrayList<>();
 
         listOfCars.add(new Car("Škoda", "3Z1 52 13", LocalDate.of(2021, 5, 12)));
@@ -96,7 +113,14 @@ public class Main {
                 break;
             default:
                 System.out.println("Něco jiného!");
-        }
+        }*/
 
+        Car car = new Car("Škoda", "3Z1 52 13", LocalDate.of(2021, 5, 12));
+        try {
+            car.setSeats(-5);
+        } catch (CarsException e) {
+            System.err.println("Nepodařilo se nastavit počet sedadel. " +e.getLocalizedMessage());
+        }
+        System.out.println(car.getNumOfSeats());
     }
 }
