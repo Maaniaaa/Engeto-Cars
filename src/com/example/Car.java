@@ -6,6 +6,7 @@ import java.util.IllegalFormatException;
 public class Car {
 
     private static final String FILE_ITEM_DELIMITER = "\t";
+
     private String brand;
     private String make;
     private int numOfSeats;
@@ -14,18 +15,39 @@ public class Car {
     private LocalDate nextCheckDate;
     private FuelType fuelType;
 
-    public static Car parseText(String record) {
+    public static Car parseCar(String record) throws CarsException {
         String[] items = record.split(FILE_ITEM_DELIMITER);
 
-        if (items.length != 7) throw new CarsException("Špatný počet položek  na řádku: "+record);
+        int numOfItems = items.length;
+        if (numOfItems != 7) {
+            throw new CarsException(
+                    "Špatný počet položek " + numOfItems
+                            + " na řádku: " + record);
+        }
 
+        // Alt+Shift+Ins => Přepnutí do/z sloupcového módu
         String brand = items[0];
-        String make;
-        int numOfSeats;
-        String licenseNumber;
-        int power;
-        LocalDate nextCheckDate;
-        FuelType fuelType;
+        String make = items[1];
+        int numOfSeats = Integer.parseInt(items[2]);
+        String licenseNumber = items[3];
+        int power = Integer.parseInt(items[4]);;
+        LocalDate nextCheckDate = LocalDate.parse(items[5]);
+        FuelType fuelType = FuelType.valueOf(items[6]);
+
+        return new Car(
+                brand, make, numOfSeats, licenseNumber, power,
+                nextCheckDate, fuelType);
+    }
+
+    public String prepareToWrite() {
+        return
+                getBrand() + FILE_ITEM_DELIMITER
+                        + getMake() + FILE_ITEM_DELIMITER
+                        + getNumOfSeats() + FILE_ITEM_DELIMITER
+                        + getLicenseNumber() + FILE_ITEM_DELIMITER
+                        + getPower() + FILE_ITEM_DELIMITER
+                        + getNextCheckDate() + FILE_ITEM_DELIMITER
+                        + getFuelType();
     }
 
     public Car(String brand, String licenseNumber, LocalDate nextCheckDate) {
@@ -66,9 +88,17 @@ public class Car {
         return numOfSeats;
     }
 
+    /**
+     * Sets number of seats. Number of seats must be greater than 0.
+     * @param seats
+     */
     public void setSeats(int seats) throws CarsException {
-        if (seats <=0) throw new CarsException("Zadán počet sedadal menší než 0");
+        if (seats <= 0) throw new CarsException("Zadán počet sedadel menší nebo roven 0");
+
+        // Pokud se zavolá throw, metoda již dále nepokračuje!!!
         this.numOfSeats = seats;
+        // Checked exceptions - musíme zpracovat!
+        // Unchecked exceptions - například RuntimeException
     }
 
     public String getLicenseNumber() {
